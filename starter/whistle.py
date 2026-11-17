@@ -5,7 +5,8 @@ tracked, often still moving, so nothing in the positions marks it -- the 66 s of
 window is labelled 0% D by possession_hmm.py for exactly that reason. The referee's whistle marks
 it, and the tactical video carries the stadium audio.
 
-    ffmpeg on PATH                            # decodes the mp4's AAC track
+    ffmpeg 9.0.2 on PATH                      # decodes the mp4's AAC track; the submission was
+                                              # generated with this version
     python starter/whistle.py                 # lists every whistle, caches them
 
     from starter.whistle import whistles
@@ -42,6 +43,11 @@ import glob
 import os
 import subprocess
 import sys
+import warnings
+
+if sys.version_info < (3, 12):
+    sys.exit("Python 3.12 or later is required (numpy 2.5.5 does not install on {}.{}).".format(
+        *sys.version_info[:2]))
 
 import numpy as np
 
@@ -62,6 +68,8 @@ PROMINENCE = 20.0        # dB above the band median, both lines. Public whistles
 MIN_LENGTH = 0.15        # s. Shorter blips are chants crossing both bands by chance.
 MAX_GAP = 0.05           # s. Gaps this short inside a whistle are bridged (warbling pea whistles).
 CACHE_DIR = os.path.join(ROOT, "evaluation", "reports")
+FFMPEG_VERSION = "9.0.2"  # the decoder the submission was generated with; another one may shift
+                          # the samples slightly and so the detected whistle frames.
 
 
 def video_path(game=GAME, data_dir=None):
@@ -76,9 +84,24 @@ def video_path(game=GAME, data_dir=None):
     return found[0]
 
 
+def check_ffmpeg_version():
+    """Warn, without failing, when ffmpeg is not the version the submission was generated with."""
+    try:
+        first_line = subprocess.run(["ffmpeg", "-version"], check=True, capture_output=True,
+                                    text=True).stdout.splitlines()[0]
+    except (OSError, subprocess.CalledProcessError, IndexError):
+        return                      # a missing ffmpeg fails with its own error in read_audio
+    words = first_line.split()
+    found = words[2] if len(words) > 2 and words[:2] == ["ffmpeg", "version"] else first_line
+    if found != FFMPEG_VERSION:
+        warnings.warn("ffmpeg {} found, the submission was generated with {}; the detected whistles "
+                      "(and so the labels) may differ.".format(found, FFMPEG_VERSION))
+
+
 def read_audio(path, sample_rate=SAMPLE_RATE):
     """Mono int16 samples of the video's soundtrack, decoded by ffmpeg straight into memory."""
-    raw = subprocess.run(["ffmpeg", "-v", "error", "-i", path, "-vn", "-ac", "1",
+    check_ffmpeg_version()
+    raw =subprocess.run(["ffmpeg", "-v", "error", "-i", path, "-vn", "-ac", "1",
                           "-ar", str(sample_rate), "-f", "s16le", "-"],
                          check=True, capture_output=True).stdout
     return np.frombuffer(raw, dtype=np.int16)
