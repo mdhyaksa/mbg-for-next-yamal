@@ -1,0 +1,8 @@
+# Match data and anything derived from it never go in this repository.
+data/
+evaluation/results/
+evaluation/reports/
+*.mp4
+*.csv
+__pycache__/
+.venv/
