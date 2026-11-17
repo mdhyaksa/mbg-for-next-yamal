@@ -1,7 +1,6 @@
 # Possession from tracking: an HMM with a learned team probability
 
 Technical document for the More Than A Hack 2027 possession challenge (BAR-ATH, tactical ATD).
-Rename it to `<team_name>.md`, or export it to `<team_name>.pdf`, before uploading.
 
 ## 1. Approach
 
@@ -171,14 +170,14 @@ versions is about half a possession. Over the whole match the submission has 301
 
 ## 8. Reproduction
 
-Needs Python 3.10 or later and ffmpeg (for the whistles). The match data bundle is not in this
-repository.
+Needs Python 3.12 or later (the pinned numpy 2.5.5 requires it) and ffmpeg (for the whistles). The
+match data bundle is not in this repository.
 
 ```bash
 pip install -r requirements.txt              # numpy, pandas (pinned)
 export MTAH_DATA_DIR=/path/to/data           # the match data bundle
-python starter/possession_hmm.py             # writes evaluation/results/hmm.csv
-python evaluation/validate_submission.py evaluation/results/hmm.csv
+python starter/possession_hmm.py --name mbg-for-next-yamal   # writes evaluation/results/mbg-for-next-yamal.csv
+python evaluation/validate_submission.py evaluation/results/mbg-for-next-yamal.csv
 ```
 
 The first run detects the referee whistles in the tactical video's audio (`starter/whistle.py`,

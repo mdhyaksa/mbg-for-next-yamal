@@ -4,15 +4,17 @@ Submission for the More Than A Hack 2027 possession challenge (BAR-ATH, tactical
 frame is labelled H (Barcelona), A (Athletic) or D (dead ball) by a three-state Viterbi decoder
 over evidence from the tracking, Smart Tagging and referee whistles in the video's audio.
 
-The technical document is [SOLUTION.md](SOLUTION.md).
+The technical document is [mbg-for-next-yamal.md](mbg-for-next-yamal.md).
 
 ## Reproduce the submission
 
+Needs Python 3.12 or later (the pinned numpy 2.5.5 requires it) and ffmpeg on PATH.
+
 ```bash
-pip install -r requirements.txt              # numpy, pandas; ffmpeg must be on PATH
+pip install -r requirements.txt              # numpy, pandas (pinned)
 export MTAH_DATA_DIR=/path/to/data           # the match data bundle, not in this repository
-python starter/possession_hmm.py             # writes evaluation/results/hmm.csv
-python evaluation/validate_submission.py evaluation/results/hmm.csv
+python starter/possession_hmm.py --name mbg-for-next-yamal   # writes evaluation/results/mbg-for-next-yamal.csv
+python evaluation/validate_submission.py evaluation/results/mbg-for-next-yamal.csv
 ```
 
 ## Layout
