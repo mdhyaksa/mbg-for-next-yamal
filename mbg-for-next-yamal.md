@@ -170,15 +170,22 @@ versions is about half a possession. Over the whole match the submission has 301
 
 ## 8. Reproduction
 
-Needs Python 3.12 or later (the pinned numpy 2.5.5 requires it) and ffmpeg (for the whistles). The
-match data bundle is not in this repository.
+Needs Python 3.12 or later (the pinned numpy 2.5.5 requires it; the starter scripts exit early on
+older versions) and ffmpeg 9.0.2 (for the whistles; another version may decode the audio slightly
+differently and shift the detected whistles, so `starter/whistle.py` warns when it differs). The
+match data bundle is not in this repository. The pipeline reads only the tactical video, the
+tactical ATD (`_atd.xml`, `_atd.txt`) and the tactical Smart Tagging file, found under
+`$MTAH_DATA_DIR/tactical/`.
 
 ```bash
 pip install -r requirements.txt              # numpy, pandas (pinned)
 export MTAH_DATA_DIR=/path/to/data           # the match data bundle
 python starter/possession_hmm.py --name mbg-for-next-yamal   # writes evaluation/results/mbg-for-next-yamal.csv
 python evaluation/validate_submission.py evaluation/results/mbg-for-next-yamal.csv
+shasum -a 256 evaluation/results/mbg-for-next-yamal.csv
 ```
+
+The README lists the expected summary (301 possessions, 31.5% D) and the file hash.
 
 The first run detects the referee whistles in the tactical video's audio (`starter/whistle.py`,
 about half a minute) and caches them in `evaluation/reports/`. The team-probability weights are in

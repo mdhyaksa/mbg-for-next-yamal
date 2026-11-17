@@ -52,6 +52,10 @@ import os
 import sys
 import warnings
 
+if sys.version_info < (3, 12):
+    sys.exit("Python 3.12 or later is required (numpy 2.5.5 does not install on {}.{}).".format(
+        *sys.version_info[:2]))
+
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
